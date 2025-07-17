@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DetectAnyLLM - Research Paper</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Lato:wght@300;400;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <!-- 主标题区域 -->
+    <header class="hero">
+        <div class="hero-content">
+            <div class="title-animation">
+                <h1 class="main-title">
+                    <span class="title-word">DetectAnyLLM</span>
+                </h1>
+                <h2 class="sub-title">
+                    Towards Generalizable and Robust Detection of Machine-Generated Text Across Domains and Models
+                </h2>
+                
+                <!-- 作者信息 -->
+                <div class="authors-list" id="authors">
+                    <a href="https://github.com/fjc2005" class="author-link" target="_blank">
+                        Jiachen Fu
+                    </a>
+                    <span class="author-separator">,</span>
+                    <a href="https://mmcheng.net/clguo/" class="author-link" target="_blank">
+                        Chun-Le Guo<sup>*</sup>
+                    </a>
+                    <span class="author-separator">,</span>
+                    <a href="https://li-chongyi.github.io/" class="author-link" target="_blank">
+                        Chongyi Li<sup>†</sup>
+                    </a>
+                </div>
+                
+                <!-- 单位信息 -->
+                <div class="affiliation">
+                    <p data-en="VCIP, CS, Nankai University" data-zh="媒体计算实验室, 南开大学">VCIP, CS, Nankai University</p>
+                </div>
+                
+                <div class="author-notes">
+                    <p data-en="<sup>*</sup>Corresponding author &nbsp;&nbsp;&nbsp;&nbsp; <sup>†</sup>Project Lead" data-zh="<sup>*</sup>通讯作者 &nbsp;&nbsp;&nbsp;&nbsp; <sup>†</sup>项目负责人"><sup>*</sup>Corresponding Author &nbsp;&nbsp;&nbsp;&nbsp; <sup>†</sup>Project Lead</p>
+                </div>
+                
+                <!-- <div class="subtitle">
+                    <p data-en="Revolutionary depth estimation technology for any environmental conditions" data-zh="突破性的深度估计技术，适应任何环境条件">Revolutionary depth estimation technology for any environmental conditions</p>
+                </div> -->
+            </div>
+
+            <!-- 交互按钮 -->
+            <div class="cta-buttons">
+                <button class="cta-btn primary" id="paper-btn">
+                    <i class="fas fa-file-pdf"></i>
+                    <span data-en="Paper" data-zh="阅读论文">Paper</span>
+                </button>
+                <button class="cta-btn arxiv" id="arxiv-btn">
+                    <img src="image/arxiv.png" alt="arXiv" class="btn-icon">
+                    <span data-en="arXiv" data-zh="arXiv">arXiv</span>
+                </button>
+                <button class="cta-btn secondary" id="code-btn">
+                    <i class="fab fa-github"></i>
+                    <span data-en="Code" data-zh="查看代码">Code</span>
+                </button>
+                <button class="cta-btn huggingface" id="hf-btn">
+                    <img src="image/huggingface_logo.svg" alt="Hugging Face" class="btn-icon">
+                    <span data-en="Hugging Face" data-zh="Hugging Face">Hugging Face</span>
+                </button>
+                <button class="cta-btn huggingface-model" id="model-btn">
+                    <img src="image/huggingface_logo.svg" alt="Hugging Face" class="btn-icon">
+                    <span data-en="Model" data-zh="模型">Model</span>
+                </button>
+            </div>
+            
+            <!-- Teaser 图片 -->
+            <div class="teaser-container scroll-target">
+                <img src="image/teaser_small.png" alt="DetectAnyLLM - Teaser" class="teaser-image lazy-load" loading="lazy">
+                <div class="image-placeholder"></div>
+            </div>
+            
+            <div class="teaser-caption scroll-target delay-200" style="text-align: justify;">
+                <p data-en="Left: Our DetectAnyLLM achieves high efficiency, strong robustness, and impressive generalization through a three-step process: <i>sampling perturbation</i>, <i>calculating discrepancy</i>, and <i>reference clustering</i>. Right: Our MIRAGE benchmark emphasizes diversity across domains, tasks, evaluation scenarios, and source LLMs, enabling comprehensive and robust evaluation."
+                   data-zh="左：我们的DetectAnyLLM通过三个步骤实现高效、鲁棒和显著的泛化能力：<i>采样扰动</i>、<i>计算差异</i>和<i>参考聚类</i>。右：我们的MIRAGE基准测试强调了跨域、任务、评估场景和源LLM的多样性，实现了全面和鲁棒的评估。">
+                    Left: Our DetectAnyLLM achieves high efficiency, strong robustness, and impressive generalization through a three-step process: <i>sampling perturbation</i>, <i>calculating discrepancy</i>, and <i>reference clustering</i>. Right: Our MIRAGE benchmark emphasizes diversity across domains, tasks, evaluation scenarios, and source LLMs, enabling comprehensive and robust evaluation.
+                </p>
+            </div>
+        </div>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <i class="fas fa-fingerprint"></i>
+                    <span class="logo-animated-text">DetectAnyLLM</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="#abstract" class="nav-link" data-en="Abstract" data-zh="摘要">Abstract</a>
+                    <a href="#method" class="nav-link" data-en="Method" data-zh="方法">Method</a>
+                    <a href="#benchmark" class="nav-link" data-en="Benchmark" data-zh="基准">Benchmark</a>
+                    <a href="#comparison" class="nav-link" data-en="Comparison" data-zh="对比">Comparison</a>
+                    <!-- <a href="#data" class="nav-link" data-en="Data" data-zh="数据">Data</a> -->
+                    <!-- <a href="#authors" class="nav-link" data-en="Authors" data-zh="作者">Authors</a> -->
+                    <!-- <a href="#results" class="nav-link" data-en="Results" data-zh="结果">Results</a> -->
+                    <a href="#code" class="nav-link" data-en="Download" data-zh="下载">Download</a>
+                    <!-- <a href="#contact" class="nav-link" data-en="Contact" data-zh="联系">Contact</a> -->
+                    <!-- <a href="#license" class="nav-link" data-en="License" data-zh="许可证">License</a> -->
+                    <a href="#citation" class="nav-link" data-en="Citation" data-zh="引用">Citation</a>
+                    <div class="language-switcher">
+                        <button class="lang-btn active" data-lang="en">EN</button>
+                        <span class="lang-separator">|</span>
+                        <button class="lang-btn" data-lang="zh">中文</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- 滚动指示器 -->
+        <div class="scroll-indicator">
+            <div class="scroll-arrow">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- 摘要部分 -->
+    <section class="abstract-section" id="abstract">
+        <div class="container scroll-target">
+            <div class="section-header">
+                <h2 class="section-title" data-en="Abstract" data-zh="摘要">Abstract</h2>
+                <div class="section-divider"></div>
+            </div>
+            
+            <!-- 详细摘要文本 -->
+            <div class="abstract-text-container">
+                <div class="abstract-paragraph">
+                    <p data-en="The rapid advancement of large language models (LLMs) has blurred the boundary between human-written and machine-generated text, drawing urgent attention to the task of machine-generated text detection (MGTD). However, existing approaches struggle in complex real-world scenarios: zero-shot detectors rely heavily on scoring model's output distribution while training-based detectors are often constrained by overfitting to the training data, limiting generalization." 
+                       data-zh="大型语言模型 (LLM) 的快速发展模糊了人类书写文本和机器生成文本之间的界限，使得机器生成文本检测 (MGTD) 任务备受关注。然而，现有方法在复杂的现实场景中表现不佳：零样本检测器严重依赖于评分模型的输出分布，而基于训练的检测器往往受制于对训练数据的过拟合，从而限制了泛化能力。">
+                       The rapid advancement of large language models (LLMs) has blurred the boundary between human-written and machine-generated text, drawing urgent attention to the task of machine-generated text detection (MGTD). However, existing approaches struggle in complex real-world scenarios: zero-shot detectors rely heavily on scoring model's output distribution while training-based detectors are often constrained by overfitting to the training data, limiting generalization.
+                    </p>
+                    
+                    <p data-en="We found that the performance bottleneck of training-based detectors stems from the misalignment between training objective and task needs, i.e., optimizing for token distribution rather than the MGTD task itself. To address this issue, we propose <b>Direct Discrepancy Learning (DDL)</b>, a novel optimization strategy that directly optimize the scoring model with task-oriented knowledge. DDL enables the scoring model to better capture the core semantics of the detection task, thereby enhancing both robustness and generalization. Built upon this approach, we introduce <b>DetectAnyLLM</b>, a unified detection framework that achieves state-of-the-art MGTD performance across diverse LLMs." 
+                       data-zh="我们发现，基于训练的检测器的性能瓶颈源于训练目标与任务需求之间的不一致，即针对 token 分布进行优化，而不是针对 MGTD 任务本身。为了解决这个问题，我们提出了<b>直接差异学习 (DDL)</b>，这是一种新颖的优化策略，它利用面向任务的知识直接优化评分模型。DDL使评分模型能够更好地捕捉检测任务的核心语义，从而增强鲁棒性和泛化能力。基于此方法，我们推出了<b>DetectAnyLLM</b>，这是一个统一的检测框架，可在不同的LLM上实现最先进的MGTD性能。">
+                       We found that the performance bottleneck of training-based detectors stems from the misalignment between training objective and task needs, i.e., optimizing for token distribution rather than the MGTD task itself. To address this issue, we propose <b>Direct Discrepancy Learning (DDL)</b>, a novel optimization strategy that directly optimize the scoring model with task-oriented knowledge. DDL enables the scoring model to better capture the core semantics of the detection task, thereby enhancing both robustness and generalization. Built upon this approach, we introduce <b>DetectAnyLLM</b>, a unified detection framework that achieves state-of-the-art MGTD performance across diverse LLMs.
+                    </p>
+                    
+                    <p data-en="To ensure a robust and reliable evaluation, we construct <b>MIRAGE</b>, the most diverse multi-task MGTD benchmark. MIRAGE samples human-written texts from 10 corpora across 5 domains, which are then regenerated or revised using 17 cutting-edge LLMs, covering a wide spectrum of commercial models and textual styles. Extensive experiments on MIRAGE reveal the limitations of existing methods in complex environment. In contrast, DetectAnyLLM consistently outperforms them, achieving over a 70% performance improvement under the same training data and base scoring model, and thus underscores the effectiveness of our DDL. " 
+                       data-zh="为了确保评估的稳健性和可靠性，我们构建了<b>MIRAGE</b>，这是迄今为止最具多样性的多任务MGTD基准测试集。MIRAGE 从 5 个领域的 10 个语料库中采样人工编写的文本，然后使用 17 个尖端的 LLM 对这些文本进行再生或修改，涵盖了广泛的商业模型和文本风格。在 MIRAGE 上进行的大量实验揭示了现有方法在复杂环境中的局限性。相比之下，DetectAnyLLM 的表现始终优于它们，在相同的训练数据和基本评分模型下实现了超过 70% 的性能提升，从而凸显了我们 DDL 的有效性。">
+                       To ensure a robust and reliable evaluation, we construct <b>MIRAGE</b>, the most diverse multi-task MGTD benchmark. MIRAGE samples human-written texts from 10 corpora across 5 domains, which are then regenerated or revised using 17 cutting-edge LLMs, covering a wide spectrum of commercial models and textual styles. Extensive experiments on MIRAGE reveal the limitations of existing methods in complex environment. In contrast, DetectAnyLLM consistently outperforms them, achieving over a 70% performance improvement under the same training data and base scoring model, and thus underscores the effectiveness of our DDL. 
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 特性摘要卡片
+            <div class="abstract-content">
+                <div class="abstract-card">
+                    <div class="abstract-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="abstract-text">
+                        <h3 data-en="Innovation Breakthrough" data-zh="创新突破">Innovation Breakthrough</h3>
+                        <p data-en="This research proposes a revolutionary depth estimation method that maintains high-precision depth perception capabilities under various complex environmental conditions." data-zh="本研究提出了一种革命性的深度估计方法，能够在各种复杂环境条件下保持高精度的深度感知能力。">This research proposes a revolutionary depth estimation method that maintains high-precision depth perception capabilities under various complex environmental conditions.</p>
+                    </div>
+                </div>
+                
+                <div class="abstract-card">
+                    <div class="abstract-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="abstract-text">
+                        <h3 data-en="Technical Advantages" data-zh="技术优势">Technical Advantages</h3>
+                        <p data-en="Through advanced neural network architectures and adaptive algorithms, robust handling of factors such as lighting changes, weather conditions, and object materials is achieved." data-zh="通过先进的神经网络架构和自适应算法，实现了对光照变化、天气条件、物体材质等因素的robust处理。">Through advanced neural network architectures and adaptive algorithms, robust handling of factors such as lighting changes, weather conditions, and object materials is achieved.</p>
+                    </div>
+                </div>
+                
+                <div class="abstract-card">
+                    <div class="abstract-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="abstract-text">
+                        <h3 data-en="Performance Results" data-zh="性能表现">Performance Results</h3>
+                        <p data-en="Significant performance improvements have been achieved on multiple benchmark datasets, providing strong technical support for computer vision and robotics fields." data-zh="在多个基准数据集上取得了显著的性能提升，为计算机视觉和机器人领域提供了强有力的技术支撑。">Significant performance improvements have been achieved on multiple benchmark datasets, providing strong technical support for computer vision and robotics fields.</p>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </section>
+
+    <!-- Method 部分 -->
+    <section class="method-section" id="method">
+        <div class="container scroll-target">
+            <div class="section-header">
+                <h2 class="section-title" data-en="Method" data-zh="方法">Method</h2>
+                <div class="section-divider"></div>
+            </div>
+            
+            <div class="method-image-container">
+                <img src="image/ddl_small.png" alt="Direct Discrepancy Learning" class="method-image lazy-load" loading="lazy">
+                <div class="image-placeholder"></div>
+            </div>
+            
+            <div class="method-caption">
+                <p data-en="While prior methods use optimization techniques like Direct Preference Optimization (DPO), they include a KL-regularization term that forces the detection model to retain its original language modeling abilities. We argue this is counter-productive, as it shifts the training objective away from learning to be an effective detector. <br><br> To address this, we propose <b>Direct Discrepancy Learning (DDL)</b>. By removing the redundant KL-regularization, we allow the scoring model to focus solely on learning task-oriented knowledge for detection. Our optimization goal is to directly maximize the discrepancy for machine-generated text (MGT) and minimize it for human-written text (HWT). <br><br> The DDL optimization objective is formulated as: <br> \[\min_\theta \mathbb{E}_{x_m, x_h \sim \mathcal{D}}(\Vert d_c(x_h, f_\theta, f_\theta)\Vert_1 + \Vert \gamma - d_c(x_m, f_\theta, f_\theta)\Vert_1).\] <br> This equation trains the model \(f_\theta\) to produce a low discrepancy score \(d_c\) (near 0) for HWT (\(x_h\)) and a high score (near \(\gamma\)) for MGT (\(x_m\)). DDL enables the scoring model to directly learn the difference between MGT and HWT, significantly boosting robustness and generalization. Finally, a <i>Reference Clustering</i> step is used to classify texts based on their scores."
+                   data-zh="先前的方法采用直接偏好优化（DPO）等技术，但其中包含的KL正则化项会迫使检测模型保留其原始的语言建模能力。我们认为这会产生负面影响，因为它使训练目标偏离了学习成为一个有效检测器的方向。<br><br>为了解决这个问题，我们提出了<b>直接差异学习（DDL）</b>。通过移除冗余的KL正则化，我们让评分模型专注于学习面向检测任务的知识。我们的优化目标是直接最大化机器生成文本（MGT）的差异度，同时最小化人类编写文本（HWT）的差异度。<br><br>DDL的优化目标公式为：<br>\[\min_\theta \mathbb{E}_{x_m, x_h \sim \mathcal{D}}(\Vert d_c(x_h, f_\theta, f_\theta)\Vert_1 + \Vert \gamma - d_c(x_m, f_\theta, f_\theta)\Vert_1).\]<br>该方程训练模型\(f_\theta\)为HWT（\(x_h\)）生成较低的差异度分数（接近0），为MGT（\(x_m\)）生成较高的分数（接近\(\gamma\)）。DDL使评分模型能够直接学习MGT和HWT之间的区别，显著提升了模型的鲁棒性和泛化能力。最后，我们使用<i>参考聚类</i>步骤根据文本的差异度分数进行分类。">
+                   While prior methods use optimization techniques like Direct Preference Optimization (DPO), they include a KL-regularization term that forces the detection model to retain its original language modeling abilities. We argue this is counter-productive, as it shifts the training objective away from learning to be an effective detector. <br><br> To address this, we propose <b>Direct Discrepancy Learning (DDL)</b>. By removing the redundant KL-regularization, we allow the scoring model to focus solely on learning task-oriented knowledge for detection. Our optimization goal is to directly maximize the discrepancy for machine-generated text (MGT) and minimize it for human-written text (HWT). <br><br> The DDL optimization objective is formulated as: <br> \[\min_\theta \mathbb{E}_{x_m, x_h \sim \mathcal{D}}(\Vert d_c(x_h, f_\theta, f_\theta)\Vert_1 + \Vert \gamma - d_c(x_m, f_\theta, f_\theta)\Vert_1).\] <br> This equation trains the model \(f_\theta\) to produce a low discrepancy score \(d_c\) (near 0) for HWT (\(x_h\)) and a high score (near \(\gamma\)) for MGT (\(x_m\)). DDL enables the scoring model to directly learn the difference between MGT and HWT, significantly boosting robustness and generalization. Finally, a <i>Reference Clustering</i> step is used to classify texts based on their scores.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benchmark 部分 -->
+    <section class="benchmark-section" id="benchmark">
+        <div class="container scroll-target">
+            <div class="section-header">
+                <h2 class="section-title" data-en="Benchmark" data-zh="基准">Benchmark</h2>
+                <div class="section-divider"></div>
+            </div>
+            
+            <div class="benchmark-image-container">
+                <img src="image/workflow_small.png" alt="MIRAGE Benchmark Workflow" class="benchmark-image lazy-load" loading="lazy">
+                <div class="image-placeholder"></div>
+            </div>
+            
+            <div class="benchmark-caption">
+                <p data-en="To address the limitations of existing benchmarks, which often lack diversity in domains, source LLMs, and tasks, we introduce <b>MIRAGE</b> (Multi-domain Inclusive Realistic Assessment for machine Generated text dEtection). MIRAGE is the most comprehensive multi-task MGTD evaluation framework to date, incorporating text across diverse domains generated or revised by 17 state-of-the-art LLMs (13 proprietary, 4 open-source). This rigorous process, involving multi-domain sampling, inclusive tasks, realistic scenarios, and style diversification, ensures MIRAGE provides a robust and realistic benchmark for evaluating MGT detectors, advancing the development of more generalizable and practical solutions." 
+                   data-zh="为解决现有基准在领域、源LLM和任务多样性方面的局限性，我们推出了<b>MIRAGE</b>（面向机器生成文本检测的多领域包容性现实评估）基准。MIRAGE是目前最全面的多任务MGTD评估框架，涵盖了由17个先进LLM（13个专有模型，4个开源模型）在不同领域生成或修订的文本。通过多领域采样、包容性任务、现实场景和风格多样化等严谨流程，MIRAGE为评估MGT检测器提供了鲁棒且真实的基准，推动了更具泛化性和实用性的解决方案的发展。">
+                    To address the limitations of existing benchmarks, which often lack diversity in domains, source LLMs, and tasks, we introduce <b>MIRAGE</b> (Multi-domain Inclusive Realistic Assessment for machine Generated text dEtection). MIRAGE is the most comprehensive multi-task MGTD evaluation framework to date, incorporating text across diverse domains generated or revised by 17 state-of-the-art LLMs (13 proprietary, 4 open-source). This rigorous process, involving multi-domain sampling, inclusive tasks, realistic scenarios, and style diversification, ensures MIRAGE provides a robust and realistic benchmark for evaluating MGT detectors, advancing the development of more generalizable and practical solutions.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Coverage 部分 -->
+    <section class="data-coverage-section" id="comparison">
+        <div class="container scroll-target">
+            <div class="section-header">
+                <h2 class="section-title" data-en="Comparison" data-zh="对比">Comparison</h2>
+                <div class="section-divider"></div>
+            </div>
+
+            <!-- Benchmark Comparison Table -->
+            <h3 style="text-align:center;margin-bottom:1rem;" data-en="Benchmark Comparison" data-zh="基准对比">Benchmark Comparison</h3>
+            <div class="data-table-container">
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th data-en="Benchmark" data-zh="基准">Benchmark</th>
+                                <th data-en="Size" data-zh="规模">Size</th>
+                                <th data-en="Domain Coverage" data-zh="领域覆盖">Domain Coverage</th>
+                                <th data-en="Corpus" data-zh="语料">Corpus</th>
+                                <th data-en="Commercial" data-zh="商用模型">Commercial</th>
+                                <th data-en="Generate" data-zh="生成">Generate</th>
+                                <th data-en="Polish" data-zh="润色">Polish</th>
+                                <th data-en="Rewrite" data-zh="改写">Rewrite</th>
+                                <th data-en="Aug." data-zh="增强">Aug.</th>
+                                <th data-en="SIG" data-zh="SIG">SIG</th>
+                                <th data-en="DIG" data-zh="DIG">DIG</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>TuringBench</td>
+                                <td>40K</td>
+                                <td>News</td>
+                                <td>3</td>
+                                <td><i class="fas fa-times" style="color:#e74c3c;"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                            </tr>
+                            <tr>
+                                <td>HC3</td>
+                                <td>85K</td>
+                                <td>QA/Comment/Academic</td>
+                                <td>5</td>
+                                <td>1</td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>M4</td>
+                                <td>24.5K</td>
+                                <td>QA/Comment/Academic/News</td>
+                                <td>11</td>
+                                <td>2</td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td></td>
+                                <td></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>MAGE</td>
+                                <td>29K</td>
+                                <td>QA/Comment/News/Academic/Story</td>
+                                <td>10</td>
+                                <td>3</td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td></td>
+                                <td></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>RAID</td>
+                                <td>628.7K</td>
+                                <td>News/Academic/Comment/Literature</td>
+                                <td>11</td>
+                                <td>3</td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>DetectRL</td>
+                                <td>134.4K</td>
+                                <td>Academic/Comment</td>
+                                <td>4</td>
+                                <td>2</td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>HART</td>
+                                <td>16K</td>
+                                <td>News/Literature/Academic</td>
+                                <td>4</td>
+                                <td>4</td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                            </tr>
+                            <tr class="our-method-row">
+                                <td>MIRAGE (ours)</td>
+                                <td>93.8K</td>
+                                <td>Academic/Comment/Email/News/Website</td>
+                                <td>10</td>
+                                <td>13</td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                                <td><i class="fas fa-check text-success"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-caption">
+                    <p data-en="MIRAGE offers the broadest domain and task coverage and leverages commercial LLMs, making it a stronger, more realistic MGTD benchmark." data-zh="MIRAGE覆盖最广的领域和任务，并引入商业LLM生成文本，是更具挑战和真实性的检测基准。">MIRAGE offers the broadest domain and task coverage and leverages commercial LLMs, making it a stronger, more realistic MGTD benchmark.</p>
+                </div>
+            </div>
+
+            <!-- Performance Comparison Table -->
+            <h3 style="text-align:center;margin:2rem 0 1rem 0;" data-en="Performance on MIRAGE" data-zh="MIRAGE性能对比">Performance on MIRAGE</h3>
+            <div class="data-table-container">
+                <div class="table-wrapper" style="overflow-x:auto;">
+                    <!-- DIG Table -->
+                    <table class="data-table performance-table">
+                        <caption>MIRAGE-DIG</caption>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Methods</th>
+                                <th colspan="4">Generate</th>
+                                <th colspan="4">Polish</th>
+                                <th colspan="4">Rewrite</th>
+                            </tr>
+                            <tr>
+                                <th>AUROC</th><th>Acc.</th><th>MCC</th><th>TPR@5%</th>
+                                <th>AUROC</th><th>Acc.</th><th>MCC</th><th>TPR@5%</th>
+                                <th>AUROC</th><th>Acc.</th><th>MCC</th><th>TPR@5%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Only include representative rows to keep table readable -->
+                            <tr>
+                                <td>Fast-DetectGPT</td>
+                                <td>0.7768</td><td>0.7234</td><td>0.4628</td><td>0.4310</td>
+                                <td>0.5720</td><td>0.5570</td><td>0.1293</td><td>0.1189</td>
+                                <td>0.5455</td><td>0.5432</td><td>0.1015</td><td>0.1025</td>
+                            </tr>
+                            <tr>
+                                <td>ImBD</td>
+                                <td>0.8597</td><td>0.7738</td><td>0.5497</td><td>0.4065</td>
+                                <td>0.7888</td><td>0.7148</td><td>0.4300</td><td>0.2730</td>
+                                <td>0.7825</td><td>0.7068</td><td>0.4139</td><td>0.2933</td>
+                            </tr>
+                            <tr class="our-method-row">
+                                <td>DetectAnyLLM (ours)</td>
+                                <td>0.9525</td><td>0.8988</td><td>0.7975</td><td>0.7770</td>
+                                <td>0.9297</td><td>0.8732</td><td>0.7487</td><td>0.7756</td>
+                                <td>0.9234</td><td>0.8705</td><td>0.7447</td><td>0.7778</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- SIG Table -->
+                    <table class="data-table performance-table" style="margin-top:2rem;">
+                        <caption>MIRAGE-SIG</caption>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Methods</th>
+                                <th colspan="4">Generate</th>
+                                <th colspan="4">Polish</th>
+                                <th colspan="4">Rewrite</th>
+                            </tr>
+                            <tr>
+                                <th>AUROC</th><th>Acc.</th><th>MCC</th><th>TPR@5%</th>
+                                <th>AUROC</th><th>Acc.</th><th>MCC</th><th>TPR@5%</th>
+                                <th>AUROC</th><th>Acc.</th><th>MCC</th><th>TPR@5%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Fast-DetectGPT</td>
+                                <td>0.7706</td><td>0.7193</td><td>0.2078</td><td>0.4200</td>
+                                <td>0.5727</td><td>0.5619</td><td>0.0607</td><td>0.1238</td>
+                                <td>0.5480</td><td>0.5495</td><td>0.0525</td><td>0.1097</td>
+                            </tr>
+                            <tr>
+                                <td>ImBD</td>
+                                <td>0.8612</td><td>0.7791</td><td>0.5599</td><td>0.4183</td>
+                                <td>0.7951</td><td>0.7199</td><td>0.4451</td><td>0.3036</td>
+                                <td>0.7694</td><td>0.6920</td><td>0.3936</td><td>0.2868</td>
+                            </tr>
+                            <tr class="our-method-row">
+                                <td>DetectAnyLLM (ours)</td>
+                                <td>0.9526</td><td>0.9059</td><td>0.8119</td><td>0.7722</td>
+                                <td>0.9316</td><td>0.8740</td><td>0.7483</td><td>0.7779</td>
+                                <td>0.9158</td><td>0.8643</td><td>0.7320</td><td>0.7574</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-caption">
+                    <p data-en="DetectAnyLLM vastly outperforms prior methods on MIRAGE under both DIG and SIG settings across all tasks." data-zh="DetectAnyLLM在MIRAGE的DIG和SIG两种评估下显著领先于所有对比方法。">DetectAnyLLM vastly outperforms prior methods on MIRAGE under both DIG and SIG settings across all tasks.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 代码和资源部分 -->
+    <section class="code-section" id="code">
+        <div class="container scroll-target">
+            <div class="section-header">
+                <h2 class="section-title" data-en="Open Source Resources" data-zh="开源资源">Open Source Resources</h2>
+                <div class="section-divider"></div>
+            </div>
+            <div class="code-resources">
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fab fa-github"></i>
+                    </div>
+                    <div class="resource-content">
+                        <h3 data-en="GitHub Repository" data-zh="GitHub 代码库">GitHub Repository</h3>
+                        <p data-en="Complete implementation code, pre-trained models and usage examples" data-zh="完整的实现代码、预训练模型和使用示例">Complete implementation code, pre-trained models and usage examples</p>
+                        <button class="resource-btn">
+                            <span data-en="Visit GitHub" data-zh="访问 GitHub">Visit GitHub</span>
+                            <i class="fas fa-external-link-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="resource-content">
+                        <h3 data-en="Datasets" data-zh="数据集">Datasets</h3>
+                        <p data-en="Download links for training and evaluation datasets" data-zh="训练和评估使用的数据集下载链接">Download links for training and evaluation datasets</p>
+                        <button class="resource-btn">
+                            <span data-en="Download Data" data-zh="下载数据">Download Data</span>
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="resource-card" style="text-align: center;">
+                    <div class="resource-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="resource-content">
+                        <h3 data-en="Pre-trained Models" data-zh="预训练模型">Pre-trained Models</h3>
+                        <p data-en="DetectAnyLLM model checkpoint and backbone" data-zh="DetectAnyLLM模型检查点和骨干网络" style="text-align: center;">DetectAnyLLM model checkpoint and backbone</p>
+                        <a href="https://huggingface.co/fjc2005/DetectAnyLLM" target="_blank" class="resource-btn">
+                            <span data-en="Download Models" data-zh="下载模型">Download Models</span>
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact部分 -->
+    <section class="contact-section" id="contact">
+        <div class="container scroll-target">
+            <div class="section-header">
+                <h2 class="section-title" data-en="Contact" data-zh="联系我们">Contact</h2>
+                <div class="section-divider"></div>
+            </div>
+            <div class="contact-content">
+                <p class="contact-text" style="font-size: 1.5rem;" data-en="Feel free to contact us at:" 
+                   data-zh="欢迎联系我们：">
+                    Feel free to contact us at:
+                </p>
+                <p class="contact-text" style="font-size: 1.5rem;">
+                    guochunle@nankai.edu.cn
+                </p>
+                <p class="contact-text" style="font-size: 1.5rem;">
+                    fjc@mail.nankai.edu.cn
+                </p>
+                <p class="contact-text" style="font-size: 1.5rem;" data-en="For commercial licensing, please contact:" 
+                   data-zh="商业许可请联系：">
+                    For commercial licensing, please contact:
+                </p>
+                <p class="contact-text" style="font-size: 1.5rem;">
+                    lichongyi@nankai.edu.cn
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- License部分 -->
+    <section class="license-section" id="license">
+        <div class="container scroll-target">
+            <div class="section-header">
+                <h2 class="section-title" data-en="License" data-zh="许可证">License</h2>
+                <div class="section-divider"></div>
+            </div>
+            <div class="license-content">
+                <div class="license-container">
+                    <div class="license-icon">
+                        <i class="fab fa-creative-commons"></i>
+                        <i class="fab fa-creative-commons-by"></i>
+                        <i class="fab fa-creative-commons-nc"></i>
+                    </div>
+                    <div class="license-text">
+                        <h3 data-en="Creative Commons Attribution-NonCommercial 4.0 International" data-zh="知识共享署名-非商业性使用 4.0 国际许可协议">Creative Commons Attribution-NonCommercial 4.0 International</h3>
+                        <p data-en="This code is licensed under the Creative Commons Attribution-NonCommercial 4.0 International for non-commercial use only. Please note that any commercial use of this code requires formal permission prior to use." 
+                           data-zh="此代码根据知识共享署名-非商业性使用 4.0 国际许可协议授权，仅供非商业用途使用。请注意，任何商业用途都需要事先获得正式许可。">
+                            This code is licensed under the Creative Commons Attribution-NonCommercial 4.0 International for non-commercial use only. Please note that any commercial use of this code requires formal permission prior to use.
+                        </p>
+                        <div class="license-actions">
+                            <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" class="license-btn">
+                                <i class="fas fa-external-link-alt"></i>
+                                <span data-en="View License" data-zh="查看许可证">View License</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Citation部分 -->
+    <section class="citation-section" id="citation">
+        <div class="container scroll-target">
+            <div class="section-header">
+                <h2 class="section-title" data-en="Citation" data-zh="引用信息">Citation</h2>
+                <div class="section-divider"></div>
+            </div>
+            <div class="citation-content">
+                <div class="bibtex-container">
+                    <div class="bibtex-header">
+                        <span class="bibtex-label">BibTeX</span>
+                        <button class="copy-btn" id="copy-bibtex">
+                            <i class="fas fa-copy"></i>
+                            <span data-en="Copy" data-zh="复制">Copy</span>
+                        </button>
+                    </div>
+                    <pre class="bibtex-code" id="bibtex-text">
+@inproceedings{fu2025detectanyllm,
+    title        = {DetectAnyLLM: Towards Generalizable and Robust Detection of Machine-Generated Text Across Domains and Models},
+    author       = {Fu, Jiachen and Guo, Chun-Le and Li, Chongyi},
+    year         = 2025,
+    booktitle    = {the 33rd ACM International Conference on Multimedia},
+    address      = {Dublin, Ireland},
+    organization = {ACM}
+}
+                    </pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 回到顶部按钮 -->
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">
+                    <p data-en="&copy; 2024 DetectAnyLLM. All rights reserved." data-zh="&copy; 2024 DetectAnyLLM. 保留所有权利。">&copy; 2024 DetectAnyLLM. All rights reserved.</p>
+                </div>
+                <!-- <div class="footer-links">
+                    <a href="#" class="footer-link" data-en="Contact Us" data-zh="联系我们">Contact Us</a>
+                    <a href="#" class="footer-link" data-en="Citation" data-zh="引用信息">Citation</a>
+                    <a href="#" class="footer-link" data-en="Related Work" data-zh="相关工作">Related Work</a>
+                </div> -->
+            </div>
+        </div>
+    </footer>
+
+
+
+    <script src="script.js"></script>
+</body>
+</html> 
