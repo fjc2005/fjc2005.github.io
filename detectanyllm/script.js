@@ -55,13 +55,18 @@ function setupEventListeners() {
     
     // CTA按钮事件
     const paperBtn = document.getElementById('paper-btn');
+    const paperChineseBtn = document.getElementById('paper-chinese-btn');
     const arxivBtn = document.getElementById('arxiv-btn');
     const codeBtn = document.getElementById('code-btn');
     const hfBtn = document.getElementById('hf-btn');
     const modelBtn = document.getElementById('model-btn');
     
     if (paperBtn) {
-        paperBtn.addEventListener('click', showPaperAlert);
+        paperBtn.addEventListener('click', downloadEnglishPaper);
+    }
+    
+    if (paperChineseBtn) {
+        paperChineseBtn.addEventListener('click', downloadChinesePaper);
     }
     
     if (arxivBtn) {
@@ -582,13 +587,48 @@ function updateLanguageButtons(lang) {
     });
 }
 
-// 更新按钮点击消息
-function showPaperAlert() {
+// 下载英文版论文
+function downloadEnglishPaper() {
+    const fileName = 'DetectAnyLLM__Towards_Generalizable_and_Robust_Detection_of_Machine_Generated_Text_Across_Domains_and_Models.pdf';
+    const filePath = '../' + fileName;
+    
+    // 创建下载链接
+    const link = document.createElement('a');
+    link.href = filePath;
+    link.download = fileName;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // 显示下载通知
     const messages = {
-        'en': '📄 Paper PDF will be released soon, stay tuned!',
-        'zh': '📄 论文PDF即将发布，敬请关注！'
+        'en': '📄 Downloading English paper...',
+        'zh': '📄 正在下载英文版论文...'
     };
-    showNotification(messages[currentLanguage], 'info');
+    showNotification(messages[currentLanguage], 'success');
+}
+
+// 下载中文版论文
+function downloadChinesePaper() {
+    const fileName = 'DetectAnyLLM_ZH.pdf';
+    const filePath = '../' + fileName;
+    
+    // 创建下载链接
+    const link = document.createElement('a');
+    link.href = filePath;
+    link.download = fileName;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // 显示下载通知
+    const messages = {
+        'en': '📄 Downloading Chinese paper...',
+        'zh': '📄 正在下载中文版论文...'
+    };
+    showNotification(messages[currentLanguage], 'success');
 }
 
 function showArxivAlert() {
