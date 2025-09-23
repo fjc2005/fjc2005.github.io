@@ -589,8 +589,8 @@ function updateLanguageButtons(lang) {
 
 // 下载英文版论文
 function downloadEnglishPaper() {
-    const fileName = 'DetectAnyLLM__Towards_Generalizable_and_Robust_Detection_of_Machine_Generated_Text_Across_Domains_and_Models.pdf';
-    const filePath = '../' + fileName;
+    const fileName = 'DetectAnyLLM.pdf';
+    const filePath = fileName;
     
     // 创建下载链接
     const link = document.createElement('a');
@@ -612,7 +612,7 @@ function downloadEnglishPaper() {
 // 下载中文版论文
 function downloadChinesePaper() {
     const fileName = 'DetectAnyLLM_ZH.pdf';
-    const filePath = '../' + fileName;
+    const filePath = fileName;
     
     // 创建下载链接
     const link = document.createElement('a');
