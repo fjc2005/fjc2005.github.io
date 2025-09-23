@@ -632,11 +632,15 @@ function downloadChinesePaper() {
 }
 
 function showArxivAlert() {
+    // 跳转到Arxiv主页
+    window.open('https://arxiv.org/abs/2509.14268', '_blank');
+    
+    // 显示跳转消息
     const messages = {
-        'en': '📚 arXiv preprint will be available soon, stay tuned!',
-        'zh': '📚 arXiv预印本即将发布，敬请关注！'
+        'en': '📄 Opening Arxiv...',
+        'zh': '📄 正在跳转到Arxiv...'
     };
-    showNotification(messages[currentLanguage], 'info');
+    showNotification(messages[currentLanguage], 'success');
 }
 
 function showCodeAlert() {
@@ -653,7 +657,7 @@ function showCodeAlert() {
 
 function openHuggingFace() {
     // 跳转到Hugging Face页面
-    window.open('https://huggingface.co/spaces/fjc2005/DetectAnyLLM-demo', '_blank');
+    window.open('https://huggingface.co/spaces/JiachenFu/DetectAnyLLM', '_blank');
     
     // 显示跳转消息
     const messages = {
@@ -665,7 +669,7 @@ function openHuggingFace() {
 
 function openHuggingFaceModel() {
     // 跳转到Hugging Face模型页面
-    window.open('https://huggingface.co/fjc2005/DetectAnyLLM', '_blank');
+    window.open('https://huggingface.co/JiachenFu/Qwen2-0.5B-detectanyllm-detector-en', '_blank');
     
     // 显示跳转消息
     const messages = {
